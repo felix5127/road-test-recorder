@@ -2940,7 +2940,7 @@ class RoadTestRecorder {
         const appKey = document.getElementById('appKey').value.trim();
         
         if (!accessKeyId || !accessKeySecret || !appKey) {
-            this.showNotification('请填写完整的API配置信息', 3000);
+            this.showNotification('请填写完整的API配置信息');
             return;
         }
         
@@ -2959,7 +2959,7 @@ class RoadTestRecorder {
             modal.remove();
         }
         
-        this.showNotification('✅ 配置已保存，正在连接...', 2000);
+        this.showNotification('✅ 配置已保存，正在连接...');
         
         // 初始化连接
         setTimeout(() => {
