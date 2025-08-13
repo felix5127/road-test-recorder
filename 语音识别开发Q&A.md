@@ -204,6 +204,73 @@ A: **遇到的问题：** 在调试过程中直接在聊天中贴出AccessKey和
 
 ---
 
+### 9. Vercel部署阶段问题
+
+**Q: 为什么点击"保存配置"按钮系统无响应？**
+
+A: **问题原因：** `showNotification`方法定义时只接受一个参数（message），但在`saveConfig`方法中调用时传递了两个参数（message + duration），导致JavaScript执行错误。
+
+**错误代码：**
+```javascript
+// 错误的调用方式
+this.showNotification('请填写完整的API配置信息', 3000);  // 传递了多余的时间参数
+this.showNotification('✅ 配置已保存，正在连接...', 2000);   // 传递了多余的时间参数
+```
+
+**解决方案：** 修正方法调用，只传递消息参数：
+```javascript
+// 正确的调用方式  
+this.showNotification('请填写完整的API配置信息');
+this.showNotification('✅ 配置已保存，正在连接...');
+```
+
+**调试经验：**
+1. **前端错误排查**: 使用浏览器开发者工具Console查看JavaScript错误
+2. **方法签名检查**: 确认方法定义的参数数量和类型
+3. **渐进式测试**: 先测试基础功能，再测试复杂交互
+4. **代码一致性**: 确保方法调用与定义保持一致
+
+**预防措施：**
+- 统一封装通知方法，支持自定义显示时长
+- 添加TypeScript或JSDoc注释明确参数类型
+- 建立代码review流程避免类似问题
+
+---
+
+### 10. Vercel配置冲突问题
+
+**Q: 为什么Vercel部署时提示"routes cannot be present"？**
+
+A: **问题原因：** 在`vercel.json`配置文件中同时使用了`routes`和`headers`配置，新版本Vercel不允许这种组合。
+
+**错误配置：**
+```json
+{
+  "routes": [...],     // 旧版路由配置
+  "headers": [...]     // 新版安全头配置
+}
+```
+
+**解决方案：** 移除`routes`配置，只保留`headers`，让Vercel自动处理静态文件路由：
+```json
+{
+  "version": 2,
+  "name": "road-test-recorder", 
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {"key": "X-Content-Type-Options", "value": "nosniff"},
+        {"key": "X-Frame-Options", "value": "DENY"},
+        {"key": "X-XSS-Protection", "value": "1; mode=block"}
+      ]
+    }
+  ]
+}
+```
+
+---
+
 ## 最终技术架构
 
 ### 核心技术栈
