@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>道路测试记录系统</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 页面标题 -->
+        <header class="header">
+            <h1>道路测试记录</h1>
+            <div class="status-indicator">
+                <span class="status-dot" id="connectionStatus"></span>
+                <span id="statusText">系统就绪</span>
+            </div>
+        </header>
+
+        <!-- 主要控制区域 -->
+        <section class="main-controls">
+            <!-- 测试状态显示 -->
+            <div class="test-status" id="testStatus">
+                <div class="status-info">
+                    <span class="status-label">测试状态:</span>
+                    <span class="status-value" id="currentStatus">未开始</span>
+                </div>
+                <div class="timer-info">
+                    <span class="timer-label">测试时长:</span>
+                    <span class="timer-value" id="testTimer">00:00:00</span>
+                </div>
+            </div>
+
+            <!-- 主要操作按钮 -->
+            <div class="control-buttons">
+                <button class="btn-primary btn-large" id="startTestBtn">
+                    <span class="btn-icon">▶</span>
+                    <span class="btn-text">开始测试</span>
+                </button>
+                <button class="btn-secondary btn-large" id="pauseTestBtn" style="display: none;">
+                    <span class="btn-icon">⏸</span>
+                    <span class="btn-text">暂停测试</span>
+                </button>
+                <button class="btn-danger btn-large" id="stopTestBtn" style="display: none;">
+                    <span class="btn-icon">⏹</span>
+                    <span class="btn-text">结束测试</span>
+                </button>
+            </div>
+
+            <!-- 语音识别状态 -->
+            <div class="voice-status" id="voiceStatus">
+                <div class="voice-indicator">
+                    <span class="voice-dot" id="voiceDot"></span>
+                    <span class="voice-text" id="voiceStatusText">语音待机</span>
+                </div>
+                <div class="voice-display" id="recognitionDisplay">
+                    <div class="subtitle-text">等待语音输入...</div>
+                </div>
+                <div class="voice-history" id="voiceHistory">
+                    <div class="history-title">识别历史</div>
+                    <div class="history-content" id="historyContent">
+                        <!-- 历史识别结果 -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 快速记录区域 -->
+        <section class="quick-record">
+            <h2>快速记录问题</h2>
+            <div class="problem-buttons">
+                <button class="problem-btn safety-btn" data-type="safety">
+                    <span class="problem-icon">⚠️</span>
+                    <span class="problem-text">安全接管</span>
+                    <span class="problem-count" id="safetyCount">0</span>
+                </button>
+                <button class="problem-btn efficiency-btn" data-type="efficiency">
+                    <span class="problem-icon">⚡</span>
+                    <span class="problem-text">效率接管</span>
+                    <span class="problem-count" id="efficiencyCount">0</span>
+                </button>
+                <button class="problem-btn experience-btn" data-type="experience">
+                    <span class="problem-icon">😕</span>
+                    <span class="problem-text">体验问题</span>
+                    <span class="problem-count" id="experienceCount">0</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- 实时统计 -->
+        <section class="statistics">
+            <h2>当前测试统计</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalCount">0</div>
+                    <div class="stat-label">总问题数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="avgInterval">--</div>
+                    <div class="stat-label">平均间隔</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="lastProblem">--</div>
+                    <div class="stat-label">最近问题</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 最近记录列表 -->
+        <section class="recent-records">
+            <div class="section-header">
+                <h2>最近记录</h2>
+                <button class="btn-small" id="refreshBtn">刷新</button>
+            </div>
+            <div class="records-list" id="recentRecords">
+                <div class="empty-state">
+                    <p>暂无记录</p>
+                    <small>开始测试后将显示记录</small>
+                </div>
+            </div>
+        </section>
+
+        <!-- 测试历史 -->
+        <section class="test-history">
+            <div class="section-header">
+                <h2>测试记录</h2>
+                <div class="history-actions">
+                    <button class="btn-small" id="exportCurrentBtn">导出当前</button>
+                    <button class="btn-small" id="historyToggleBtn">收起</button>
+                </div>
+            </div>
+            <div class="history-list" id="historyList">
+                <div class="empty-state">
+                    <p>暂无历史测试</p>
+                    <small>完成测试后将显示历史记录</small>
+                </div>
+            </div>
+        </section>
+
+
+    </div>
+
+    <!-- 确认对话框 -->
+    <div class="modal" id="confirmModal" style="display: none;">
+        <div class="modal-content">
+            <h3 id="modalTitle">确认操作</h3>
+            <p id="modalMessage">确定要执行此操作吗？</p>
+            <div class="modal-buttons">
+                <button class="btn-secondary" id="modalCancel">取消</button>
+                <button class="btn-primary" id="modalConfirm">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 状态指示器 -->
+    <div id="statusIndicator" class="status-indicator">未录制</div>
+    
+    <!-- 通知消息 -->
+    <div id="notification" class="notification" style="display: none;"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>

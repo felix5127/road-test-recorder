@@ -1,0 +1,29 @@
+# 依赖和构建文件
+node_modules/
+.next/
+.vercel/
+dist/
+build/
+
+# 环境配置
+.env
+.env.local
+.env.production
+
+# 日志文件
+*.log
+npm-debug.log*
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# 编辑器配置
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 临时文件
+*.tmp
+*.temp
